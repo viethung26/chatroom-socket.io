@@ -1,0 +1,69 @@
+html
+    head
+        script(src="socket.io/socket.io.js")
+        link(rel="stylesheet", href="index.css")
+            
+    body
+        input(type="text", name="name", placeHolder="Name", onKeyUp="login(event)")
+        .chatroom
+            .online
+                h3 User online
+                ul.online-list
+            .chats
+                .messages
+                p.typing-info
+                input(name="msg", type="text", placeHolder="Chat here", autoFocus="true", onKeyUp="chat(event)", onFocus="typing(event)", onBlur="leave(event)")
+
+        script.
+            let $chatroom = document.querySelector('.chatroom') 
+            let $online = document.querySelector('.online-list') 
+            let $messages = document.querySelector('.messages') 
+            let $name = document.querySelector("[name='name']")
+            let $typingInfo = document.querySelector('.typing-info')
+            $typingInfo.style.visibility = 'hidden'
+            let socket = io('http://localhost:3000')
+            function login(e) {
+                if(e.keyCode === 13) {
+                    socket.emit('new-name', e.target.value.trim())
+                    e.target.value = ""
+                }        
+            }
+            function typing(e) {
+                socket.emit('is-typing')
+            }
+            function leave(e) {
+                socket.emit('was-leaved')
+            }
+            function chat(e) {
+                if(e.keyCode === 13) {
+                    socket.emit('chat', e.target.value.trim())
+                    e.target.value = ""
+                }        
+            }
+            socket.on('refuse', ()=> {
+                alert("This name was taken, choose another name")
+            })
+            socket.on('accept', ()=> {
+                $chatroom.style.display = 'grid'
+                $name.style.display = 'none'
+            })
+            socket.on('online-list', names=> {
+                $online.innerHTML = ""
+                names.forEach(name=> {
+                    let $newEl = document.createElement('li')
+                    $newEl.innerText = name
+                    $online.appendChild($newEl)
+                })
+            })
+            socket.on('person-is-typing', name=> {
+                $typingInfo.innerText = name + " is typing ..."
+                $typingInfo.style.visibility = "visible"
+            })
+            socket.on('person-was-leaved', name=> {
+                $typingInfo.style.visibility = "hidden"
+            })
+            socket.on('new-msg', newmsg=> {
+                let $newMsg = document.createElement('p')
+                $newMsg.innerHTML = `<b>${newmsg.name}</b>: ${newmsg.msg}`
+                $messages.appendChild($newMsg)
+            })

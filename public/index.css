@@ -1,0 +1,37 @@
+* {
+    margin: 0px;
+}
+body {
+    margin: 10px;
+}
+button {
+    width: 30px;
+    height: 30px;
+}
+input[name='msg'] {
+    padding: 5px;
+    width: 100%;
+}
+h3 {
+    text-align: center;
+    border-bottom: 1px red solid;
+}
+.chatroom {
+    width: 70%;
+    display: none;
+    grid-template-columns: 1fr 4fr;
+}
+.online {
+    height: 100%;
+    border: 1px solid red;
+    border-right: none;
+}
+.chats {
+    background-color: #ddd;
+    border: 1px solid red;
+}
+.messages {
+    height: 400px;
+    background-color: white;
+    padding: 5px;
+}
