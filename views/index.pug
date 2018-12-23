@@ -5,6 +5,20 @@ html
             
     body
         input(type="text", name="name", placeHolder="Name", onKeyUp="login(event)")
+        .rooms
+                input(type="text", name="roomname", placeHolder="Room's name")
+                button(onClick="createRoom()") create
+                table
+                    thead
+                        tr
+                            th Name
+                            th Owner
+                            th Number
+                    tbody.room-list
+                         tr
+                            td Hung
+                            td viet hung
+                            td 2
         .chatroom
             .online
                 h3 User online
@@ -16,6 +30,8 @@ html
 
         script.
             let $chatroom = document.querySelector('.chatroom') 
+            let $rooms = document.querySelector('.rooms') 
+            let $roomList = document.querySelector('.room-list') 
             let $online = document.querySelector('.online-list') 
             let $messages = document.querySelector('.messages') 
             let $name = document.querySelector("[name='name']")
@@ -27,6 +43,13 @@ html
                     socket.emit('new-name', e.target.value.trim())
                     e.target.value = ""
                 }        
+            }
+            function createRoom() {
+                let $roomname = document.querySelector("[name='roomname'")
+                socket.emit('create-room', $roomname.value.trim())
+            }
+            function joinRoom(name) {
+                socket.emit('join-room', name)
             }
             function typing(e) {
                 socket.emit('is-typing')
@@ -44,8 +67,29 @@ html
                 alert("This name was taken, choose another name")
             })
             socket.on('accept', ()=> {
-                $chatroom.style.display = 'grid'
+                $rooms.style.display = 'block'
+                //- $chatroom.style.display = 'grid'
                 $name.style.display = 'none'
+            })
+            socket.on('room-existed', ()=> {
+                alert("Room is existed")
+            })
+            socket.on('rooms', rooms=> {
+                $roomList.innerHTML = ""
+                rooms.forEach(room=> {
+                    let $newRow = document.createElement('tr')
+                    $newRow.innerHTML = `
+                        <td>${room.name}</td>
+                        <td>${room.owner}</td>
+                        <td>${room.number}</td>
+                        <td><button onclick="joinRoom('${room.name}')">Join</button></td>
+                    `
+                    $roomList.appendChild($newRow)
+                })
+            })
+            socket.on('enter-room', ()=> {
+                $rooms.style.display = 'none'
+                $chatroom.style.display = 'grid'
             })
             socket.on('online-list', names=> {
                 $online.innerHTML = ""

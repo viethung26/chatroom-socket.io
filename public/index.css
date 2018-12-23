@@ -4,10 +4,6 @@
 body {
     margin: 10px;
 }
-button {
-    width: 30px;
-    height: 30px;
-}
 input[name='msg'] {
     padding: 5px;
     width: 100%;
@@ -15,6 +11,26 @@ input[name='msg'] {
 h3 {
     text-align: center;
     border-bottom: 1px red solid;
+}
+table {
+    border: 1px solid red;
+    border-collapse: collapse;
+    margin: 10px;
+}
+tr {
+    border: 1px solid red;
+}
+td, th {
+    text-align: center;
+    border: 1px solid red;
+    padding: 10px;
+
+
+}
+.rooms {
+    width: 70%;
+    display: none;
+    /* grid-template-columns: 1fr 4fr; */
 }
 .chatroom {
     width: 70%;
