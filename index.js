@@ -31,9 +31,15 @@ io.on('connection', socket=> {
         }
         index = rooms.findIndex(room=> room.name === socket.roomName)
         if(index!==-1) {
-            rooms[index].number = (socket.adapter.rooms[`${socket.roomName}`].length)
-            rooms[index].members = updateRoomMember(socket.roomName)
-            io.sockets.in(socket.roomName).emit('online-list', rooms[index].members)
+            let room = (socket.adapter.rooms[`${socket.roomName}`])
+            if(room) {
+                rooms[index].number = room.length
+                rooms[index].members = updateRoomMember(socket.roomName)
+                io.sockets.in(socket.roomName).emit('online-list', rooms[index].members)
+            } else {
+                rooms.splice(index,1)
+            }
+            io.sockets.emit('rooms', rooms)            
         }
     })
     socket.on('new-name', name=> {
